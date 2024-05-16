@@ -14,7 +14,7 @@
 
     <div class="field">
         <label for="note_list_id">Notizlisten-ID</label>
-        <input type="number" id="note_list_id" formControlName="note_list_id">
+        <input type="number" id="note_list_id" formControlName="note_list_id" [disabled]="true">
         <!-- div *ngIf="errors['note_list_id']" class="ui negative message">{{ errors['note_list_id'] }}</div -->
     </div>
 

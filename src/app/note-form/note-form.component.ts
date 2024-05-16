@@ -23,6 +23,7 @@ export class NoteFormComponent implements OnInit{
   tags: FormArray;
   todos: FormArray;
   noteTags: Tag [] = [];
+  noteListId: number = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -37,12 +38,14 @@ export class NoteFormComponent implements OnInit{
 
   ngOnInit() {
     const noteId = this.route.snapshot.params['noteId'];
+    this.noteListId = this.route.snapshot.params['noteListId'];
     if(noteId){
       this.isUpdatingNote = true;
       this.es.getNoteById(noteId).subscribe((note: any) =>{
         this.note = note;
         this.es.getTagsByNoteId(noteId).subscribe((tags: any) => {
           this.noteTags = tags;
+          this.note.note_list_id = this.noteListId;
           this.initNote();
         });
         this.es.getTodosByNoteId(noteId).subscribe((todos: any) => {
@@ -54,6 +57,7 @@ export class NoteFormComponent implements OnInit{
       });
 
     }
+    this.note.note_list_id = this.noteListId;
       this.initNote();
 
 
@@ -65,7 +69,7 @@ export class NoteFormComponent implements OnInit{
       id: [this.note.id, Validators.required],
       title: [this.note.title, Validators.required],
       description: [this.note.description, Validators.required],
-      note_list_id: [this.note.note_list_id, Validators.required],
+      note_list_id: [{value: this.note.note_list_id, disabled: true}],
       created_at: [{value: this.note.created_at.toString().split("T")[0], disabled: true}],
       updated_at: [{value: this.note.updated_at.toString().split("T")[0], disabled: true}],
       tags: this.tags
@@ -114,9 +118,10 @@ export class NoteFormComponent implements OnInit{
     }
     let noteTags : NoteTag = NoteTagFactory.fromObject(note);
     noteTags.tags = tags;
+    noteTags.note_list_id = this.noteListId;
     if (this.isUpdatingNote) {
       this.es.updateNote(note.id, noteTags).subscribe(res => {
-        this.router.navigate(["../../../noteLists", note.note_list_id], {
+        this.router.navigate(["../../../../noteLists", this.noteListId], {
           relativeTo: this.route
         });
       });
@@ -128,7 +133,7 @@ export class NoteFormComponent implements OnInit{
       this.es.createNote(noteTags).subscribe(res => {
         this.note = NoteFactory.empty();
         this.noteForm.reset(NoteFactory.empty());
-        this.router.navigate(["../../noteLists", note.note_list_id], { relativeTo: this.route });
+        this.router.navigate(["../../../noteLists", this.noteListId], { relativeTo: this.route });
 
       })
     }

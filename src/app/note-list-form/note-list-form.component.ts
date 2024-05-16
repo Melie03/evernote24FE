@@ -1,24 +1,23 @@
 import { Component } from '@angular/core';
 import { EvernoteService } from '../shared/evernote.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NoteListFactory } from '../shared/note-list-factory';
 import { Tag } from '../shared/tag';
 
 @Component({
   selector: 'bs-note-list-form',
   standalone: true,
-  imports: [],
+  imports: [ReactiveFormsModule],
   templateUrl: './note-list-form.component.html',
   styles: ``
 })
 export class NoteListFormComponent {
   noteListForm : FormGroup;
   noteList = NoteListFactory.empty();
-  isUpdatingNote = false;
+  isUpdatingNoteList = false;
   errors: { [key: string]: string } = {};
-  notes: FormArray;
-  todos: FormArray;
+
 
 
   constructor(
@@ -28,37 +27,65 @@ export class NoteListFormComponent {
     private router: Router
   ) {
     this.noteListForm = this.fb.group({});
-    this.notes = this.fb.array([]);
-    this.todos = this.fb.array([]);
+
   }
   ngOnInit() {
     const noteListId = this.route.snapshot.params['noteListId'];
     if(noteListId){
-      this.isUpdatingNote = true;
-      this.es.getNoteById(noteListId).subscribe((note: any) =>{
-        this.noteList = this.noteList;
-            this.es.getNoteListById(noteListId).subscribe((tags: any) => {
-             for(let note of notes){
-                this.notes.push(this.fb.group(note));
-             }
-            });
-            this.es.getTodosByNoteId(noteListId).subscribe((todos: any) => {
-              for(let todo of todos){
-                this.todos.push(this.fb.group(todo));
-              }
-            });
+      this.isUpdatingNoteList = true;
+      this.es.getNoteListById(noteListId).subscribe((list: any) =>{
+        this.noteList = list;
+        this.initNoteList();
+      });
 
-          });
+    }
+      this.initNoteList();
 
-        }
-          this.initNoteList();
+
   }
   initNoteList() {
-    throw new Error('Method not implemented.');
+    this.noteListForm = this.fb.group({
+      id: [this.noteList.id, Validators.required],
+      name: [this.noteList.name, Validators.required],
+      user_id: [this.noteList.user_id, Validators.required],
+      created_at: [{value: this.noteList.created_at?.toString().split("T")[0], disabled: true}],
+      updated_at: [{value: this.noteList.updated_at?.toString().split("T")[0], disabled: true}]
+    });
+    this.noteListForm.statusChanges.subscribe(() =>
+      this.updateErrorMessage()
+    );
+
   }
 
-  addNote(){
-    this.router.navigate(['../../admin/noteList'], { relativeTo: this.route });
+  updateErrorMessage(): void {
+    /* this.errors = {};
+     for (const message of NoteFactory.validationMessages) {
+       const control = this.noteForm.get(message.forControl);
+       if (control &&
+           control.dirty &&
+           control.invalid &&
+           control.errors[message.forValidator] &&
+           !this.errors[message.forControl]) {
+         this.errors[message.forControl] = message.text;
+       }
+     }*/
+   }
+   submitForm() {
+    const noteList = NoteListFactory.fromObject(this.noteListForm.value);
+    if (this.isUpdatingNoteList) {
+      this.es.updateNoteList(noteList.id,noteList).subscribe(res => {
+        this.router.navigate(["../../../noteLists"], { relativeTo: this.route });
+      });
+    } else {
+      noteList.user_id = 1;
+      this.es.createNoteList(noteList).subscribe(res => {
+        this.noteList = NoteListFactory.empty();
+        console.log(noteList)
+        this.noteListForm.reset(NoteListFactory.empty());
+        this.router.navigate(["../../noteLists"], { relativeTo: this.route });
+      });
+    }
+
   }
 
 }

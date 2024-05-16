@@ -5,6 +5,8 @@ import { Todo } from '../shared/todo';
 import { NoteLists } from '../shared/note-lists';
 import { ActivatedRoute, Router } from '@angular/router';
 import { concat } from 'rxjs';
+import { NoteTag } from '../shared/noteTag';
+import { NoteTagFactory } from '../shared/noteTag-factory';
 
 @Component({
   selector: 'bs-note',
@@ -14,11 +16,9 @@ import { concat } from 'rxjs';
   styles: ``
 })
 export class NoteComponent implements OnInit {
-  notes: Note[] = [];
+  notes: NoteTag[] = [];
   todos: Todo[] = [];
   id: number = 0;
-  tags: Tag[] = [];
-  noteTags: Tag [] = [];
 
   constructor(
     private es: EvernoteService,
@@ -28,13 +28,9 @@ export class NoteComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const noteId = this.route.snapshot.params['noteId'];
+
     this.route.params.subscribe(params => {
       this.id = params['listId'];
-      this.es.getTagsByNoteId(noteId).subscribe((tags: any) => {
-        this.noteTags = tags;
-        this.loadNote();
-      });
       this.loadNote();
     });
 
@@ -43,8 +39,8 @@ export class NoteComponent implements OnInit {
   loadNote(): void {
     this.es.getNotesByListId(this.id).subscribe(
       (response: any) => {
-        this.notes = response;
-        for (let note of this.notes) {
+        let notesRaw = response;
+        for (let note of notesRaw) {
           this.es.getTodosByNoteId(note.id).subscribe(
             (todoResponse: any) => {
               this.todos = this.todos.concat(todoResponse);
@@ -53,12 +49,11 @@ export class NoteComponent implements OnInit {
               console.error('Fehler beim Laden der Todos:', error);
             }
           );
-
-
           this.es.getTagsByNoteId(note.id).subscribe(
             (tagResponse: any) => {
-              this.noteTags = this.noteTags.concat(tagResponse);
-              console.log(this.noteTags)
+              let currentNote = NoteTagFactory.fromObject(note);
+              currentNote.tags = tagResponse;
+              this.notes.push(currentNote);
             },
             (error: any) => {
               console.error('Fehler beim Laden der Tags:', error);
@@ -86,9 +81,9 @@ export class NoteComponent implements OnInit {
     );
   }
   editNote(noteId: number): void {
-    this.router.navigate(['../../admin/note', noteId], { relativeTo: this.route });
+    this.router.navigate(['../../admin/' + this.id + '/note', noteId], { relativeTo: this.route });
   }
   addNote(){
-    this.router.navigate(['../../admin/note'], { relativeTo: this.route });
+    this.router.navigate(['../../admin/' + this.id + '/note'], { relativeTo: this.route });
   }
 }

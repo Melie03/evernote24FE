@@ -3,6 +3,9 @@ import { EvernoteService } from '../shared/evernote.service';
 import { Todo } from '../shared/todo';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { NoteTagFactory } from '../shared/noteTag-factory';
+import { TodoTagFactory } from '../shared/todoTag-factory ';
+import { TodoTag } from '../shared/todo-tag';
 
 @Component({
   selector: 'bs-todo',
@@ -12,11 +15,12 @@ import { CommonModule } from '@angular/common';
   styles: ``
 })
 export class TodoComponent implements OnInit {
-  todos: Todo[] = [];
+  todos: TodoTag[] = [];
+  id: number = 0;
 
   constructor(
-    private evernoteService: EvernoteService,
-    private activatedRoute: ActivatedRoute,
+    private es: EvernoteService,
+    private route: ActivatedRoute,
     private router: Router
   ) {}
 
@@ -25,10 +29,21 @@ export class TodoComponent implements OnInit {
   }
 
   loadTodos(): void {
-    this.evernoteService.getTodosWithoutNote().subscribe(
+    this.es.getTodosWithoutNote().subscribe(
       (response: any) => {
-        this.todos = response;
-        console.log(response);
+        let todossRaw = response;
+        for(let todo of todossRaw){
+          this.es.getTagsByTodoId(todo.id).subscribe(
+            (tagResponse: any) => {
+              let currentTodo = TodoTagFactory.fromObject(todo);
+              currentTodo.tags = tagResponse;
+              this.todos.push(currentTodo);
+            },
+            (error: any) => {
+              console.error('Fehler beim Laden der Tags:', error);
+            }
+          );
+        }
       },
       (error: any) => {
         console.error('Fehler beim Laden der Todos:', error);
@@ -37,7 +52,7 @@ export class TodoComponent implements OnInit {
   }
 
   deleteTodo(todoId: number): void {
-    this.evernoteService.deleteTodo(todoId).subscribe(
+    this.es.deleteTodo(todoId).subscribe(
       (response: any) => {
         this.loadTodos();
         console.log(response);
@@ -49,9 +64,9 @@ export class TodoComponent implements OnInit {
   }
 
   editTodo(todoId: number): void {
-    this.router.navigate(['../admin/todo', todoId], { relativeTo: this.activatedRoute });
+    this.router.navigate(['../admin/todo', todoId], { relativeTo: this.route });
   }
   createTodo(): void {
-    this.router.navigate(['../admin/todo'], { relativeTo: this.activatedRoute });
+    this.router.navigate(['../admin/todo'], { relativeTo: this.route });
   }
 }

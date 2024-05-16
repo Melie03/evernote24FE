@@ -13,7 +13,7 @@ import { NoteComponent } from '../note/note.component';
     noteLists: any[] = [];
 
     constructor(private evernoteService: EvernoteService,
-      private activatedRoute: ActivatedRoute,
+      private route: ActivatedRoute,
       private router: Router
     ) { }
 
@@ -32,5 +32,20 @@ import { NoteComponent } from '../note/note.component';
         }
       );
     }
-
+    addList(){
+      this.router.navigate(['../admin/noteList'], { relativeTo: this.route });
+    }
+    editList(listId: any){
+      this.router.navigate(['../admin/noteList', listId], { relativeTo: this.route });
+    }
+    deleteNoteList(noteListId: number){
+      this.evernoteService.deleteNoteList(noteListId).subscribe(
+        (response: any) => {
+          this.loadNoteLists();
+        },
+        (error: any) => {
+          console.error('Fehler beim Löschen der Notizliste:', error);
+        }
+      );
+    }
 }

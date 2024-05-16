@@ -1,1 +1,20 @@
-<p>user works!</p>
+@if(user){
+<div class="ui container">
+    <div class="ui grid">
+        <div class="ui row">
+            <div class="four wide column">
+                <img class="ui medium rounded image" src="{{user.image}}" alt="User Image">
+            </div>
+            <div class="twelve wide column">
+                <h1 class="ui header">
+                    Hello {{user.first_name}} {{user.last_name}}
+                    <button class="ui button negative right floated">Log Out</button>
+                </h1>
+                <h2 class="ui dividing header">Daten</h2>
+                <p><strong>Email:</strong> {{user.email}}</p>
+                <p><strong>Beitrittsdatum:</strong> {{user.created_at}}</p>
+            </div>
+        </div>
+    </div>
+</div>
+}

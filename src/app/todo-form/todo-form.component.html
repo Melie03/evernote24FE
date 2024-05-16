@@ -31,6 +31,15 @@
         <input type="checkbox" formControlName="completed" [disabled]="false">
     </div>
 
+    <div class="field" formArrayName="tags">
+        <label>Tags</label> @for(tag of tags.controls; let i = $index; track tag){
+        <div [formGroupName]="i">
+            <input type="text" formControlName="tagName" placeholder="Tag Name">
+            <button class="ui red button" type="button" (click)="deleteTag(tag)">Entfernen</button>
+        </div>
+        }
+        <button class="ui green button" type="button" (click)="addTagControl()">Tag hinzufügen</button>
+    </div>
 
     <button type="submit" class="ui button" [disabled]="todoForm.invalid">Speichern</button>
 </form>

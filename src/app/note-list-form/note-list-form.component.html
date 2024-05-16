@@ -1,1 +1,20 @@
-<p>note-list-form works!</p>
+<h1>Listenformular</h1>
+<form class="ui large form" [formGroup]="noteListForm" (ngSubmit)="submitForm()">
+
+    <div class="field">
+        <label for="name">Name</label>
+        <textarea id="name" formControlName="name"></textarea>
+        <!-- div *ngIf="errors['description']" class="ui negative message">{{ errors['description'] }}</div-->
+    </div>
+
+    <div class="field">
+        <label>Erstellungsdatum</label>
+        <input type="date" formControlName="created_at" [disabled]="true">
+    </div>
+
+    <div class="field">
+        <label>Aktualisierungsdatum</label>
+        <input type="date" formControlName="updated_at" [disabled]="true">
+    </div>
+    <button type="submit" class="ui button" [disabled]="noteListForm.invalid">Speichern</button>
+</form>

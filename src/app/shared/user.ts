@@ -10,6 +10,7 @@ export class User {
     public password: string,
     public created_at: Date,
     public updated_at: Date,
+    public image: string,
     public lists: NoteLists[]
   ) {}
 }
