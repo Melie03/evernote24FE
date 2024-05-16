@@ -1,0 +1,36 @@
+<h1>Todo</h1>
+<form class="ui large form" [formGroup]="todoForm" (ngSubmit)="submitForm()">
+    <div class="field">
+        <label for="title">Titel</label>
+        <input type="text" id="title" formControlName="title">
+        <!-- div *ngIf="errors['title']" class="ui negative message">{{ errors['title'] }}</div-->
+    </div>
+
+    <div class="field">
+        <label for="description">Beschreibung</label>
+        <textarea id="description" formControlName="description" rows="3"></textarea>
+        <!-- div *ngIf="errors['description']" class="ui negative message">{{ errors['description'] }}</div-->
+    </div>
+
+    <div class="field">
+        <label for="due_date">Fälligkeitsdatum</label>
+        <input type="date" id="due_date" formControlName="due_date" [disabled]="false">
+        <!-- div *ngIf="errors['note_list_id']" class="ui negative message">{{ errors['note_list_id'] }}</div -->
+    </div>
+    <div class="field">
+        <label>Erstellungsdatum</label>
+        <input type="date" formControlName="created_at" [disabled]="true">
+    </div>
+
+    <div class="field">
+        <label>Aktualisierungsdatum</label>
+        <input type="date" formControlName="updated_at" [disabled]="true">
+    </div>
+    <div class="field">
+        <label>Abgeschlossen</label>
+        <input type="checkbox" formControlName="completed" [disabled]="false">
+    </div>
+
+
+    <button type="submit" class="ui button" [disabled]="todoForm.invalid">Speichern</button>
+</form>

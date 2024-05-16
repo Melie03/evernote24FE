@@ -1,0 +1,42 @@
+<h1>Notizformular</h1>
+<form class="ui large form" [formGroup]="noteForm" (ngSubmit)="submitForm()">
+    <div class="field">
+        <label for="title">Titel</label>
+        <input type="text" id="title" formControlName="title">
+        <!-- div *ngIf="errors['title']" class="ui negative message">{{ errors['title'] }}</div-->
+    </div>
+
+    <div class="field">
+        <label for="description">Beschreibung</label>
+        <textarea id="description" formControlName="description" rows="3"></textarea>
+        <!-- div *ngIf="errors['description']" class="ui negative message">{{ errors['description'] }}</div-->
+    </div>
+
+    <div class="field">
+        <label for="note_list_id">Notizlisten-ID</label>
+        <input type="number" id="note_list_id" formControlName="note_list_id">
+        <!-- div *ngIf="errors['note_list_id']" class="ui negative message">{{ errors['note_list_id'] }}</div -->
+    </div>
+
+    <div class="field">
+        <label>Erstellungsdatum</label>
+        <input type="date" formControlName="created_at" [disabled]="true">
+    </div>
+
+    <div class="field">
+        <label>Aktualisierungsdatum</label>
+        <input type="date" formControlName="updated_at" [disabled]="true">
+    </div>
+
+    <div class="field" formArrayName="tags">
+        <label>Tags</label> @for(tag of tags.controls; let i = $index; track tag){
+        <div [formGroupName]="i">
+            <input type="text" formControlName="tagName" placeholder="Tag Name">
+            <button class="ui red button" type="button" (click)="deleteTag(tag)">Entfernen</button>
+        </div>
+        }
+        <button class="ui green button" type="button" (click)="addTagControl()">Tag hinzufügen</button>
+    </div>
+
+    <button type="submit" class="ui button" [disabled]="noteForm.invalid">Speichern</button>
+</form>

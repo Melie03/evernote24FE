@@ -1,0 +1,7 @@
+<div class="ui middle aligned selection divided list">
+    @for (list of noteLists; track list){
+    <a class="item" [routerLink]="list.id"> ID: {{ list.id }}, Name: {{ list.name }}, User ID: {{ list.user_id }}</a> }
+
+</div>
+<button class="ui tiny green labeled icon button" (click)="addList()">
+  <i ></i>Liste hinzufügen</button>

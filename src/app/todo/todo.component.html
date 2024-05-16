@@ -1,0 +1,13 @@
+@for(todo of todos; track todo){
+<div class="ui checkbox">
+    <input type="checkbox" [checked]="todo.completed" disabled>
+    <label>{{ todo.description }}</label>
+    <button class="ui tiny red labeled icon button" (click)="deleteTodo(todo.id)">
+      <i class="remove icon"></i>Löschen</button>
+    <a class="ui tiny yellow labeled icon button" (click)="editTodo(todo.id)">
+        <i class="edit icon"></i>Bearbeiten
+    </a>
+
+</div>
+<br> }
+<button class="ui green button" (click)="createTodo()">Todo hinzufügen</button>

@@ -1,0 +1,36 @@
+<div class="ui middle aligned selection divided list">
+    @for (note of notes; track note){
+    <div class="content">
+        <div class="header">{{ note.title }}</div>
+        <div class="description">{{ note.description }}</div>
+        <div class="meta">
+            Created: {{ note.created_at }}, Updated: {{ note.updated_at}}
+        </div>
+        <div>
+            @for(todo of todos; track todo){ @if(todo.note_id == note.id){
+            <div class="ui checkbox">
+                <input type="checkbox" [checked]="todo.completed">
+                <label>{{ todo.description }}</label>
+            </div>
+            <br> } }
+        </div>
+        <div class="extra">
+            @for(tag of noteTags; let i = $index; track tag){
+
+            <div>
+                <p>{{tag.name}}</p>
+            </div>
+
+            }
+        </div>
+    </div>
+
+    <button class="ui tiny red labeled icon button" (click)="deleteNote(note.id)">
+      <i class="remove icon"></i>Löschen</button>
+    <a class="ui tiny yellow labeled icon button" (click)="editNote(note.id)">
+        <i class="edit icon"></i>Bearbeiten
+    </a>
+    }
+    <button class="ui tiny green labeled icon button" (click)="addNote()">
+      <i ></i>Notitz hinzufügen</button>
+</div>
