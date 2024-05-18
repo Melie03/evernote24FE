@@ -3,8 +3,9 @@
 
     <div class="field">
         <label for="name">Name</label>
-        <textarea id="name" formControlName="name"></textarea>
-        <!-- div *ngIf="errors['description']" class="ui negative message">{{ errors['description'] }}</div-->
+        <textarea id="name" formControlName="name"></textarea> @if(errors['name']){
+        <div class="ui negative message">{{ errors['name'] }}</div>
+        }
     </div>
 
     <div class="field">

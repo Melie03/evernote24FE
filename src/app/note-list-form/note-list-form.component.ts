@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NoteListFactory } from '../shared/note-list-factory';
 import { Tag } from '../shared/tag';
+import { min } from 'rxjs';
+import { NoteListFormErrorMessages } from './note-list-error-message';
 
 @Component({
   selector: 'bs-note-list-form',
@@ -46,30 +48,36 @@ export class NoteListFormComponent {
   initNoteList() {
     this.noteListForm = this.fb.group({
       id: [this.noteList.id, Validators.required],
-      name: [this.noteList.name, Validators.required],
+      name: [this.noteList.name, [Validators.required, Validators.minLength(5),Validators.maxLength(20)]],
       user_id: [this.noteList.user_id, Validators.required],
       created_at: [{value: this.noteList.created_at?.toString().split("T")[0], disabled: true}],
       updated_at: [{value: this.noteList.updated_at?.toString().split("T")[0], disabled: true}]
     });
     this.noteListForm.statusChanges.subscribe(() =>
       this.updateErrorMessage()
+
     );
 
   }
 
-  updateErrorMessage(): void {
-    /* this.errors = {};
-     for (const message of NoteFactory.validationMessages) {
-       const control = this.noteForm.get(message.forControl);
-       if (control &&
-           control.dirty &&
-           control.invalid &&
-           control.errors[message.forValidator] &&
-           !this.errors[message.forControl]) {
-         this.errors[message.forControl] = message.text;
-       }
-     }*/
-   }
+    updateErrorMessage(): void {
+    this.errors = {};
+    console.log('hu');
+    for (const message of NoteListFormErrorMessages) {
+      const control = this.noteListForm.get(message.forControl);
+      console.log(control);
+      if (control &&
+        control.dirty &&
+        control.invalid &&
+        control.errors &&
+        control.errors[message.forValidator] &&
+        !this.errors[message.forControl]) {
+        this.errors[message.forControl] = message.text;
+
+      }
+    }
+  }
+
    submitForm() {
     const noteList = NoteListFactory.fromObject(this.noteListForm.value);
     if (this.isUpdatingNoteList) {
