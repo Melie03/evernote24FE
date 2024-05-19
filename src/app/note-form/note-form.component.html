@@ -42,7 +42,9 @@
             </div>
             <div class="field">
                 <label>Todo Beschreibung</label>
-                <input type="text" formControlName="description" placeholder="Beschreibung">
+                <input type="text" formControlName="description" placeholder="Beschreibung"> @if(errors['description']){
+                <div class="ui negative message">{{ errors['description'] }}</div>
+                }
             </div>
             <div class="field">
                 <label>Todo Datum</label>

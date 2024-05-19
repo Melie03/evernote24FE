@@ -1,8 +1,9 @@
 // user.component.ts
 import { Component, OnInit } from '@angular/core';
-import { User } from '../shared/user';
+import { NoteLists, User } from '../shared/user';
 import { EvernoteService } from '../shared/evernote.service'; // Import your service
 import { ActivatedRoute, Router } from '@angular/router';
+import { AuthenticationService } from '../shared/authentication.service';
 
 @Component({
   selector: 'bs-user',
@@ -13,13 +14,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class UserComponent implements OnInit {
 
-  userId: number = 1;
-  user: User | undefined;
+  user: User = new User (0, '','','','',new Date, new Date,'',[]);
+  pendingLists: NoteLists [] = [];
 
   constructor(
     private es: EvernoteService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private auth: AuthenticationService
   ) { }
 
   ngOnInit(): void {
@@ -27,9 +29,10 @@ export class UserComponent implements OnInit {
   }
 
   loadUser(): void {
-    this.es.getUserById(this.userId).subscribe({
+    this.auth.me().subscribe({
       next: (user: User) => {
         this.user = user;
+        this.getPendingLists();
       },
       error: (error: any) => {
         console.error('Error loading user:', error);
@@ -38,6 +41,24 @@ export class UserComponent implements OnInit {
   }
 
   logout(): void {
-    console.log('Logout functionality to be implemented');
+    this.auth.logout();
+    this.router.navigate(['/login']);
+  }
+
+  getPendingLists(){
+    this.es.getAllPendingLists(this.user.id).subscribe(res =>{
+      this.pendingLists = res;
+    })
+  }
+  acceptList(listId: number){
+    this.es.acceptSharedList(listId, this.user.id).subscribe(res =>{
+      this.getPendingLists();
+    })
+  }
+
+  declineList(listId: number){
+    this.es.declineSharedList(listId, this.user.id).subscribe(res =>{
+      this.getPendingLists();
+    })
   }
 }

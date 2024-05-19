@@ -8,7 +8,7 @@ export class Todo {
     public description:string,
     public due_date:Date,
     public note_id: number,
-    public assigned_user_id: number,
+    public assigned_user_id: number | null,
     public created_at: Date,
     public updated_at: Date,
     public completed: boolean,

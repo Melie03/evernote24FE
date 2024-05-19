@@ -9,6 +9,7 @@ import { NoteTagFactory } from '../shared/noteTag-factory';
 import { Todo } from '../shared/todo';
 import { TodoFactory } from '../shared/todo-factory';
 import { NoteFormErrorMessages } from './note-form-error-message';
+import { User } from '../shared/user';
 
 
 @Component({
@@ -28,6 +29,8 @@ export class NoteFormComponent implements OnInit{
   noteTags: Tag [] = [];
   noteListId: number = 0;
   noteTodos: Todo[] = [];
+  sharedUsers: User[] = [];
+
 
   constructor(
     private fb: FormBuilder,
@@ -52,9 +55,17 @@ export class NoteFormComponent implements OnInit{
           this.note.note_list_id = this.noteListId;
           this.es.getTodosByNoteId(noteId).subscribe((todos: any) => {
               this.noteTodos = todos;
-            this.initNote();
+            this.es.getUsersWhoShareLists(this.noteListId).subscribe((users: any) => {
+              this.sharedUsers = users;
+              this.initNote();
+            });
           });
         });
+      });
+    }else{
+      this.es.getUsersWhoShareLists(this.noteListId).subscribe((users: any) => {
+        this.sharedUsers = users;
+        this.initNote();
       });
     }
     this.note.note_list_id = this.noteListId;
@@ -118,7 +129,7 @@ export class NoteFormComponent implements OnInit{
           description : new FormControl(todo.description,[Validators.required, Validators.maxLength(255), Validators.minLength(10)]),
           due_date : new FormControl(todo.due_date, [Validators.required]),
           note_id: new FormControl(this.note.id, [Validators.required]),
-          assigned_user_id : new FormControl(todo.assigned_user_id, [Validators.required]),
+          assigned_user_id : new FormControl(todo.assigned_user_id),
           created_at: [{value: todo.created_at.toString().split("T")[0], disabled: true}],
           updated_at: [{value: todo.updated_at.toString().split("T")[0], disabled: true}],
           completed : new FormControl(todo.completed)
@@ -139,6 +150,9 @@ export class NoteFormComponent implements OnInit{
     for(let t of this.noteForm.value.todos){
       let todo = TodoFactory.fromObject(t);
       todo.note_id = note.id;
+      if(todo.assigned_user_id == -1){
+        todo.assigned_user_id = null;
+      }
       todos.push(todo);
       console.log(todo);
     }

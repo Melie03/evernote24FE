@@ -6,6 +6,8 @@ import { NoteListFactory } from '../shared/note-list-factory';
 import { Tag } from '../shared/tag';
 import { min } from 'rxjs';
 import { NoteListFormErrorMessages } from './note-list-error-message';
+import { AuthenticationService } from '../shared/authentication.service';
+import { User } from '../shared/user';
 
 @Component({
   selector: 'bs-note-list-form',
@@ -19,6 +21,7 @@ export class NoteListFormComponent {
   noteList = NoteListFactory.empty();
   isUpdatingNoteList = false;
   errors: { [key: string]: string } = {};
+  user: User | undefined ;
 
 
 
@@ -26,7 +29,8 @@ export class NoteListFormComponent {
     private fb: FormBuilder,
     private es : EvernoteService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private auth: AuthenticationService
   ) {
     this.noteListForm = this.fb.group({});
 
@@ -37,9 +41,19 @@ export class NoteListFormComponent {
       this.isUpdatingNoteList = true;
       this.es.getNoteListById(noteListId).subscribe((list: any) =>{
         this.noteList = list;
-        this.initNoteList();
+        this.auth.me().subscribe(res =>{
+          this.user = res;
+          console.log(this.user)
+          this.initNoteList();
+        })
       });
 
+    }else{
+      this.auth.me().subscribe(res =>{
+        this.user = res;
+        console.log(this.user)
+        this.initNoteList();
+      })
     }
       this.initNoteList();
 
@@ -62,7 +76,6 @@ export class NoteListFormComponent {
 
     updateErrorMessage(): void {
     this.errors = {};
-    console.log('hu');
     for (const message of NoteListFormErrorMessages) {
       const control = this.noteListForm.get(message.forControl);
       console.log(control);
@@ -85,7 +98,9 @@ export class NoteListFormComponent {
         this.router.navigate(["../../../noteLists"], { relativeTo: this.route });
       });
     } else {
-      noteList.user_id = 1;
+      if (this.user) {
+        noteList.user_id = this.user.id;
+      }
       this.es.createNoteList(noteList).subscribe(res => {
         this.noteList = NoteListFactory.empty();
         console.log(noteList)

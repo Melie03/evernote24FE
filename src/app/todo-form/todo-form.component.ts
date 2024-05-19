@@ -53,9 +53,9 @@ ngOnInit() {
   initTodo() {
     this.buildTagsArray();
     this.todoForm = this.fb.group({
-      id: [this.todo.id],
-      title: [this.todo.title, Validators.required],
-      description: [this.todo.description,Validators.required],
+      id: [this.todo.id, Validators.required],
+      title: [this.todo.title, Validators.required, Validators.maxLength(15)],
+      description: [this.todo.description,Validators.required, Validators.maxLength(255), Validators.minLength(10)],
       due_date: [{value: this.todo.due_date.toString().split("T")[0], disabled: false}, Validators.required],
       created_at: [{value: this.todo.created_at.toString().split("T")[0], disabled: true}],
       updated_at: [{value: this.todo.updated_at.toString().split("T")[0], disabled: true}],

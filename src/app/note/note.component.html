@@ -1,5 +1,5 @@
-<h1 class="ui huge header">Notizen</h1>
-<div class="ui ">
+<div class="ui container">
+    <h1 class="ui huge header">Notizen</h1>
     <div class="ui very relaxed segments">
         @for (note of notes; track note){
         <div class="ui raised segment">
@@ -19,7 +19,7 @@
                                     <label>{{ todo.title }}<br>{{ todo.description }}</label>
                                 </div>
                             </div>
-                            } }
+                            }}
                         </div>
                         <div class="ui small horizontal list">
                             @for(tag of note.tags; let i = $index; track tag){
@@ -30,7 +30,7 @@
                 <div class="four wide column right aligned">
                     <button class="ui tiny red labeled icon button" (click)="deleteNote(note.id)">
                       <i class="remove icon"></i> Löschen
-                  </button>
+                    </button>
                     <a class="ui tiny yellow labeled icon button" (click)="editNote(note.id)">
                         <i class="edit icon"></i> Bearbeiten
                     </a>
@@ -40,6 +40,6 @@
         }
         <button class="ui large green labeled icon button" (click)="addNote()">
           <i class="plus icon"></i> Notiz hinzufügen
-      </button>
+        </button>
     </div>
 </div>

@@ -56,6 +56,14 @@ export class EvernoteService {
     return this.http.get(`${this.baseUrl}/noteLists/shared/${userId}`);
   }
 
+  getAllPendingLists(userId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/noteLists/shared/${userId}/pending`);
+  }
+
+  getUsersWhoShareLists(listId:number):Observable <any>{
+    return this.http.get(`${this.baseUrl}/noteLists/${listId}/shared`)
+  }
+
   // Notes Endpoints
   getNotes(): Observable<any> {
     return this.http.get(`${this.baseUrl}/notes`);

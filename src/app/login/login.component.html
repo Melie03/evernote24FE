@@ -1,0 +1,22 @@
+@if(!isLoggedIn()){
+<div class="ui container">
+    <h1 class="ui header">Login</h1>
+    <form class="ui large form" [formGroup]="loginForm" (ngSubmit)="login()">
+        <div class="field">
+            <label for="username">E-Mail</label>
+            <input type="email" id="username" formControlName="username" placeholder="Deine E-Mail"> @if(loginForm.get('username')?.invalid && (loginForm.get('username')?.dirty || loginForm.get('username')?.touched) && loginForm.get('username')?.hasError('required')){
+            <div class="ui negative message">Benutzername ist verpflichtend.</div>
+            } @if(loginForm.get('username')?.invalid && (loginForm.get('username')?.dirty || loginForm.get('username')?.touched) && loginForm.get('username')?.hasError('email')){
+            <div class="ui negative message">E-Mail Format überprüfen.</div>
+            }
+        </div>
+        <div class="field">
+            <label for="password">Passwort</label>
+            <input type="password" id="password" formControlName="password" placeholder="Dein Passwort"> @if(loginForm.get('password')?.invalid && (loginForm.get('password')?.dirty || loginForm.get('password')?.touched)){
+            <div class="ui negative message">Passwort ist verpflichtend.</div>
+            }
+        </div>
+        <button type="submit" class="ui fluid large teal submit button" [disabled]="loginForm.invalid">Login</button>
+    </form>
+</div>
+}
