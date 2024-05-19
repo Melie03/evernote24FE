@@ -94,6 +94,7 @@ export class NoteFormComponent implements OnInit{
   }
     updateErrorMessage(): void {
     this.errors = {};
+    console.log(this.noteForm)
     for (const message of NoteFormErrorMessages) {
       const control = this.noteForm.get(message.forControl);
       if (control &&
@@ -101,6 +102,7 @@ export class NoteFormComponent implements OnInit{
         control.invalid &&
         control.errors?.[message.forValidator] &&
         !this.errors[message.forControl]) {
+
         this.errors[message.forControl] = message.text;
       }
     }
@@ -125,8 +127,8 @@ export class NoteFormComponent implements OnInit{
       for (let todo of  this.noteTodos) {
         let fg = this.fb.group({
           id : new FormControl(todo.id ,[ Validators.required]),
-         title : new FormControl(todo.title,[ Validators.required, Validators.maxLength(15)]),
-          description : new FormControl(todo.description,[Validators.required, Validators.maxLength(255), Validators.minLength(10)]),
+         title : new FormControl(todo.title,[ Validators.required, Validators.maxLength(30)]),
+          description : new FormControl(todo.description,[Validators.required, Validators.maxLength(255), Validators.minLength(5)]),
           due_date : new FormControl(todo.due_date, [Validators.required]),
           note_id: new FormControl(this.note.id, [Validators.required]),
           assigned_user_id : new FormControl(todo.assigned_user_id),

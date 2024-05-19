@@ -54,7 +54,17 @@
                 <label>Todo Erledigt</label>
                 <input type="checkbox" formControlName="completed" placeholder="Erledigt">
             </div>
-
+            @if(sharedUsers.length > 1){
+            <div class="field">
+                <label>Zuweisen an</label>
+                <select formControlName="assigned_user_id">
+                  <option  default value="-1">Nicht zugewiesen</option>
+                  @for(user of sharedUsers; track user){
+                  <option [value]="user.id">{{ user.first_name }} {{user.last_name}}</option>
+                  }
+                </select>
+            </div>
+            }
             <button class="ui red button" type="button" (click)="deleteTodo(todo)">Entfernen</button>
         </div>
         }

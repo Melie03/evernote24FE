@@ -7,6 +7,7 @@ import { Tag, Todo } from '../shared/todo';
 import { TodoFactory } from '../shared/todo-factory';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TodoTag } from '../shared/todo-tag';
+import { TodoFormErrorMessages } from './todo-error-message';
 
 @Component({
   selector: 'app-todo-form',
@@ -53,15 +54,19 @@ ngOnInit() {
   initTodo() {
     this.buildTagsArray();
     this.todoForm = this.fb.group({
-      id: [this.todo.id, Validators.required],
-      title: [this.todo.title, Validators.required, Validators.maxLength(15)],
-      description: [this.todo.description,Validators.required, Validators.maxLength(255), Validators.minLength(10)],
-      due_date: [{value: this.todo.due_date.toString().split("T")[0], disabled: false}, Validators.required],
+      id: [this.todo.id, [Validators.required]],
+      title: [this.todo.title, [Validators.required, Validators.maxLength(30)]],
+      description: [this.todo.description,[Validators.required, Validators.maxLength(255), Validators.minLength(10)]],
+      due_date: [{value: this.todo.due_date.toString().split("T")[0], disabled: false}, [Validators.required]],
       created_at: [{value: this.todo.created_at.toString().split("T")[0], disabled: true}],
       updated_at: [{value: this.todo.updated_at.toString().split("T")[0], disabled: true}],
       completed: [false],
       tags: this.tags
     });
+
+    this.todoForm.statusChanges.subscribe(() =>
+      this.updateErrorMessage()
+    );
   }
   buildTagsArray(): any {
     if (this.todoTags) {
@@ -112,5 +117,21 @@ ngOnInit() {
       })
     }
 
+  }
+  updateErrorMessage(): void {
+    this.errors = {};
+    for (const message of TodoFormErrorMessages) {
+      const control = this.todoForm.get(message.forControl);
+      console.log(control);
+      if (control &&
+        control.dirty &&
+        control.invalid &&
+        control.errors &&
+        control.errors[message.forValidator] &&
+        !this.errors[message.forControl]) {
+        this.errors[message.forControl] = message.text;
+
+      }
+    }
   }
 }

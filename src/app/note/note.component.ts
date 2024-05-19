@@ -16,9 +16,13 @@ import { NoteTagFactory } from '../shared/noteTag-factory';
   styles: ``
 })
 export class NoteComponent implements OnInit {
+
   notes: NoteTag[] = [];
   todos: Todo[] = [];
   id: number = 0;
+  tags: Tag[] = [];
+  selectedTagName: string = '';
+  allNotes: NoteTag[] = [];
 
   constructor(
     private es: EvernoteService,
@@ -32,6 +36,10 @@ export class NoteComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.id = params['listId'];
       this.loadNote();
+      this.es.getTags().subscribe(res => {
+        this.tags = res;
+        console.log(this.tags)
+      })
     });
 
   }
@@ -54,6 +62,7 @@ export class NoteComponent implements OnInit {
               let currentNote = NoteTagFactory.fromObject(note);
               currentNote.tags = tagResponse;
               this.notes.push(currentNote);
+              this.allNotes.push(currentNote);
             },
             (error: any) => {
               console.error('Fehler beim Laden der Tags:', error);
@@ -83,7 +92,28 @@ export class NoteComponent implements OnInit {
   editNote(noteId: number): void {
     this.router.navigate(['../../admin/' + this.id + '/note', noteId], { relativeTo: this.route });
   }
-  addNote(){
+  addNote() {
     this.router.navigate(['../../admin/' + this.id + '/note'], { relativeTo: this.route });
+  }
+  filter() {
+    if (this.selectedTagName === '') {
+      this.notes = this.allNotes;
+      return;
+    }
+    this.notes = this.allNotes.filter(note => note.tags.some(tag => tag.name === this.selectedTagName));
+  }
+  selectedTagFilter(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    if (selectElement.value == '') {
+      this.selectedTagName = '';
+      return;
+    }
+    const selectedTagId = Number(selectElement.value);
+    let selectedTag = this.tags.find(tag => tag.id === selectedTagId);
+    if (selectedTag) {
+      this.selectedTagName = selectedTag.name;
+    } else {
+      console.error('Ungültiger Tag.');
+    }
   }
 }

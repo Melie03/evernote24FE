@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { EvernoteService } from '../shared/evernote.service';
-import { Todo } from '../shared/todo';
+import { Tag, Todo } from '../shared/todo';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NoteTagFactory } from '../shared/noteTag-factory';
@@ -17,6 +17,9 @@ import { TodoTag } from '../shared/todo-tag';
 export class TodoComponent implements OnInit {
   todos: TodoTag[] = [];
   id: number = 0;
+  selectedTagName: string = '';
+  allTodos: TodoTag[] = [];
+  tags: Tag[] = [];
 
   constructor(
     private es: EvernoteService,
@@ -26,6 +29,10 @@ export class TodoComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadTodos();
+    this.es.getTags().subscribe(res => {
+      this.tags = res;
+      console.log(this.tags)
+    })
   }
 
   loadTodos(): void {
@@ -38,6 +45,7 @@ export class TodoComponent implements OnInit {
               let currentTodo = TodoTagFactory.fromObject(todo);
               currentTodo.tags = tagResponse;
               this.todos.push(currentTodo);
+              this.allTodos.push(currentTodo);
             },
             (error: any) => {
               console.error('Fehler beim Laden der Tags:', error);
@@ -68,5 +76,26 @@ export class TodoComponent implements OnInit {
   }
   createTodo(): void {
     this.router.navigate(['../admin/todo'], { relativeTo: this.route });
+  }
+  filter() {
+    if (this.selectedTagName === '') {
+      this.todos = this.allTodos;
+      return;
+    }
+    this.todos = this.allTodos.filter(note => note.tags.some(tag => tag.name === this.selectedTagName));
+  }
+  selectedTagFilter(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    if (selectElement.value == '') {
+      this.selectedTagName = '';
+      return;
+    }
+    const selectedTagId = Number(selectElement.value);
+    let selectedTag = this.tags.find(tag => tag.id === selectedTagId);
+    if (selectedTag) {
+      this.selectedTagName = selectedTag.name;
+    } else {
+      console.error('Ungültiger Tag.');
+    }
   }
 }

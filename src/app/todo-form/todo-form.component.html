@@ -2,20 +2,23 @@
 <form class="ui large form" [formGroup]="todoForm" (ngSubmit)="submitForm()">
     <div class="field">
         <label for="title">Titel</label>
-        <input type="text" id="title" formControlName="title">
+        <input type="text" id="title" formControlName="title"> @if(errors['title']){
         <div class="ui negative message">{{ errors['title'] }}</div>
+        }
     </div>
 
     <div class="field">
         <label for="description">Beschreibung</label>
-        <textarea id="description" formControlName="description"></textarea>
+        <textarea id="description" formControlName="description"></textarea> @if(errors['description']){
         <div class="ui negative message">{{ errors['description'] }}</div>
+        }
     </div>
 
     <div class="field">
         <label for="due_date">Fälligkeitsdatum</label>
-        <input type="date" id="due_date" formControlName="due_date" [disabled]="false">
+        <input type="date" id="due_date" formControlName="due_date" [disabled]="false"> @if(errors['due_date']){
         <div class="ui negative message">{{ errors['due_date'] }}</div>
+        }
     </div>
     <div class="field">
         <label>Erstellungsdatum</label>

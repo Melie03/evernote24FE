@@ -1,6 +1,15 @@
 <div class="ui container">
     <h1 class="ui huge header">Notizen</h1>
     <div class="ui very relaxed segments">
+        <div>
+            <select class="ui dropdown" (change)="selectedTagFilter($event)">
+          <option value="" selected >Alle Tags</option>
+          @for(t of tags; track t){
+              <option value="{{t.id }}">{{ t.name }}</option>
+          }
+      </select>
+            <button class="ui button teal" (click)="filter()">Suchen</button>
+        </div>
         @for (note of notes; track note){
         <div class="ui raised segment">
             <div class="ui grid">
@@ -16,9 +25,11 @@
                             <div class="item">
                                 <div class="ui checkbox">
                                     <input type="checkbox" [checked]="todo.completed">
-                                    <label>{{ todo.title }}<br>{{ todo.description }}</label>
+                                    <label>{{ todo.title }}  @if(todo.assigned_user_id != null){(Zugewiesen an: {{todo.assigned_user_id}})}<br>{{ todo.description }}</label>
+
                                 </div>
                             </div>
+
                             }}
                         </div>
                         <div class="ui small horizontal list">

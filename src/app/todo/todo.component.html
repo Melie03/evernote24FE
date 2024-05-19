@@ -1,6 +1,15 @@
 <div class="ui container">
     <h1 class="ui huge header">Todos</h1>
     <div class="ui segments">
+        <div>
+            <select class="ui dropdown" (change)="selectedTagFilter($event)">
+      <option value="" selected >Alle Tags</option>
+      @for(t of tags; track t){
+          <option value="{{t.id }}">{{ t.name }}</option>
+      }
+  </select>
+            <button class="ui button teal" (click)="filter()">Suchen</button>
+        </div>
         @for(todo of todos; track todo){
         <div class="ui segment">
             <div class="ui grid">
@@ -28,4 +37,5 @@
             </div>
         </div>
         }
+        <button class="ui green button" (click)="createTodo()">Todo hinzufügen</button>
     </div>
