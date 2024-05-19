@@ -4,25 +4,42 @@
     <div class="item">
         <div class="content">
             <a class="header" [routerLink]="list.id">ID: {{ list.id }}, Name: {{ list.name }}, User ID: {{ list.user_id }}</a>
-            <div class="description">
-                <select class="ui dropdown" (change)="selectedUserToShare($event, list.id)">
-                    <option value="" selected disabled hidden>Wähle einen User</option>
-                    @for(u of users; track u){
-                        @if(user && user.id != u.id){
-                        <option value="{{ u.id }}">{{ u.first_name }} {{u.last_name}}</option>
-                        }
-                    }
-                </select>
+            <div class="ui form">
+                <div class="field">
+                    <label>Teilen mit:</label>
+                    <select class="ui dropdown" (change)="selectedUserToShare($event, list.id)">
+                      <option value="" selected disabled hidden>Wähle einen User</option>
+                      @for(u of users; track u){
+                          @if(user && user.id != u.id){
+                          <option value="{{ u.id }}">{{ u.first_name }} {{u.last_name}}</option>
+                          }
+                      }
+                  </select>
+                </div>
                 <button class="ui button teal" (click)="shareList(list.id)">Teilen</button>
+            </div>
+            <div class="ui form">
+                <div class="field">
+                    <label>Entfernen von:</label>
+                    <select class="ui dropdown" (change)="selectedUserToRemove($event, list.id)">
+                      <option value="" selected disabled hidden>Wähle einen User</option>
+                      @for(u of users; track u){
+                          @if(user && user.id != u.id){
+                          <option value="{{ u.id }}">{{ u.first_name }} {{u.last_name}}</option>
+                          }
+                      }
+                  </select>
+                </div>
+                <button class="ui button teal" (click)="removeFromList(list.id)">Entfernen</button>
             </div>
         </div>
         <div class="right floated content">
             <button class="ui tiny yellow labeled icon button" (click)="editList(list.id)">
-                <i class="edit icon"></i> Bearbeiten
-            </button>
+              <i class="edit icon"></i> Bearbeiten
+          </button>
             <button class="ui tiny red button" (click)="deleteNoteList(list.id)">
-                <i class="remove icon"></i> Entfernen
-            </button>
+              <i class="remove icon"></i> Entfernen
+          </button>
         </div>
     </div>
     }

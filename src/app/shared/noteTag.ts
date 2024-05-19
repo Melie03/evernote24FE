@@ -9,5 +9,6 @@ export class NoteTag {
     public note_list_id: number,
     public created_at: Date,
     public updated_at: Date,
+    public img: string | null,
     public tags: any[]) { }
 }

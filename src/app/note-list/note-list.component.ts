@@ -5,6 +5,7 @@ import { NoteComponent } from '../note/note.component';
 import { AuthenticationService } from '../shared/authentication.service';
 import { User } from '../shared/user';
 import { Observable } from 'rxjs';
+import { literal } from '@angular/compiler';
 
 @Component({
   selector: 'bs-note-list',
@@ -17,6 +18,7 @@ export class NoteListComponent implements OnInit {
   user: User | undefined;
   users: User[] = [];
   userSelectionMap: Map<number, string> = new Map<number, string>();
+  userRemoveSelectionMap: Map<number, string> = new Map<number, string>();
 
   constructor(
     private evernoteService: EvernoteService,
@@ -30,6 +32,7 @@ export class NoteListComponent implements OnInit {
     this.evernoteService.getUsers().subscribe(res => {
       this.users = res;
     });
+
   }
 
   loadNoteLists(): void {
@@ -38,7 +41,6 @@ export class NoteListComponent implements OnInit {
       this.evernoteService.getNoteListsByUserId(this.user.id).subscribe(
         (response: any) => {
           this.noteLists = response;
-          console.log(response);
         },
         (error: any) => {
           console.error('Fehler beim Laden der Notizlisten:', error);
@@ -95,5 +97,25 @@ export class NoteListComponent implements OnInit {
 
   shareNoteList(listId: number, userId: number): Observable<any> {
     return this.evernoteService.shareNoteList(listId, userId);
+  }
+
+  removeFromList(listId: number): void {
+    const selectedUserId = this.userRemoveSelectionMap.get(listId);
+    console.log(listId)
+    if (selectedUserId) {
+      this.evernoteService.declineSharedList(listId, Number(selectedUserId)).subscribe();
+    } else {
+      console.error('Kein Benutzer für die Liste ausgewählt.');
+    }
+  }
+
+  selectedUserToRemove(event: Event, listId: number): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const selectedUserId = selectElement.value;
+    if (this.noteLists.find(noteList => noteList.id === listId) && this.users.find(user => user.id === +selectedUserId)) {
+      this.userRemoveSelectionMap.set(listId, selectedUserId);
+    } else {
+      console.error('Ungültige Liste oder Benutzer ID.');
+    }
   }
 }

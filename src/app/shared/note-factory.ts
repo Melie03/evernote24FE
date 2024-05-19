@@ -11,7 +11,8 @@ export class NoteFactory {
             '',
             0,
             new Date(),
-            new Date()
+            new Date(),
+            ''
         );
     }
 
@@ -24,7 +25,9 @@ export class NoteFactory {
             typeof(rawNote.created_at === 'string') ?
                 new Date(rawNote.created_at) : rawNote.created_at,
             typeof(rawNote.updated_at === 'string') ?
-                new Date(rawNote.updated_at) : rawNote.updated_at
+                new Date(rawNote.updated_at) : rawNote.updated_at,
+                rawNote.img
+
         );
     }
 }

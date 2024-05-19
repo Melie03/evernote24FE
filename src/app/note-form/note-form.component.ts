@@ -79,6 +79,7 @@ export class NoteFormComponent implements OnInit{
       id: [this.note.id, Validators.required],
       title: [this.note.title, [Validators.required, Validators.minLength(5), Validators.maxLength(50)]],
       description: [this.note.description, [Validators.required, Validators.minLength(5), Validators.maxLength(400)]],
+      img: [this.note.img],
       note_list_id: [{value: this.note.note_list_id, disabled: true}],
       created_at: [{value: this.note.created_at.toString().split("T")[0], disabled: true}],
       updated_at: [{value: this.note.updated_at.toString().split("T")[0], disabled: true}],
@@ -161,6 +162,9 @@ export class NoteFormComponent implements OnInit{
     let noteTags : NoteTag = NoteTagFactory.fromObject(note);
     noteTags.tags = tags;
     noteTags.note_list_id = this.noteListId;
+    if(noteTags.img && noteTags.img == ''){
+      noteTags.img = null;
+    }
     if (this.isUpdatingNote) {
       this.es.updateNote(note.id, noteTags).subscribe(res => {
         for(let t of todos){
