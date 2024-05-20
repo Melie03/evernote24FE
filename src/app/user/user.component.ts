@@ -4,11 +4,14 @@ import { NoteLists, User } from '../shared/user';
 import { EvernoteService } from '../shared/evernote.service'; // Import your service
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthenticationService } from '../shared/authentication.service';
+import { CommonModule, registerLocaleData } from '@angular/common';
+import localeDe from '@angular/common/locales/de';
 
+registerLocaleData(localeDe);
 @Component({
   selector: 'bs-user',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './user.component.html',
   styles: [`:host { display: block; padding: 20px; }`]
 })

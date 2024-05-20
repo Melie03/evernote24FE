@@ -1,17 +1,23 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, LOCALE_ID, OnInit } from '@angular/core';
 import { EvernoteService } from '../shared/evernote.service';
 import { Note, Tag } from '../shared/note';
 import { Todo } from '../shared/todo';
 import { NoteLists } from '../shared/note-lists';
 import { ActivatedRoute, Router } from '@angular/router';
-import { concat } from 'rxjs';
 import { NoteTag } from '../shared/noteTag';
 import { NoteTagFactory } from '../shared/noteTag-factory';
+import { CommonModule } from '@angular/common';
+import { registerLocaleData } from '@angular/common';
+import localeDe from '@angular/common/locales/de';
 
+registerLocaleData(localeDe);
 @Component({
   selector: 'bs-note',
   standalone: true,
-  imports: [],
+  imports: [
+    CommonModule
+  ],
+  providers: [{ provide: LOCALE_ID, useValue: 'de-DE' }],
   templateUrl: './note.component.html',
   styles: ``
 })
