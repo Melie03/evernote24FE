@@ -1,21 +1,27 @@
-<h1>Listenformular</h1>
-<form class="ui large form" [formGroup]="noteListForm" (ngSubmit)="submitForm()">
+<div class="ui container">
+    <h1 class="ui header">Listenformular</h1>
+    <form class="ui large form" [formGroup]="noteListForm" (ngSubmit)="submitForm()">
+        <div class="field">
+            <label for="name">Name</label>
+            <input id="name" formControlName="name"> @if(errors['name']){
+            <div class="ui negative message">
+                {{ errors['name'] }}
+            </div>
+            }
+        </div>
 
-    <div class="field">
-        <label for="name">Name</label>
-        <textarea id="name" formControlName="name"></textarea> @if(errors['name']){
-        <div class="ui negative message">{{ errors['name'] }}</div>
-        }
-    </div>
+        <div class="two fields">
+            <div class="field">
+                <label>Erstellungsdatum</label>
+                <input type="date" formControlName="created_at" [disabled]="true">
+            </div>
 
-    <div class="field">
-        <label>Erstellungsdatum</label>
-        <input type="date" formControlName="created_at" [disabled]="true">
-    </div>
+            <div class="field">
+                <label>Aktualisierungsdatum</label>
+                <input type="date" formControlName="updated_at" [disabled]="true">
+            </div>
+        </div>
 
-    <div class="field">
-        <label>Aktualisierungsdatum</label>
-        <input type="date" formControlName="updated_at" [disabled]="true">
-    </div>
-    <button type="submit" class="ui button" [disabled]="noteListForm.invalid">Speichern</button>
-</form>
+        <button type="submit" class="ui blue button" [disabled]="noteListForm.invalid">Speichern</button>
+    </form>
+</div>

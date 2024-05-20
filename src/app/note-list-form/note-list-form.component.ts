@@ -17,64 +17,65 @@ import { User } from '../shared/user';
   styles: ``
 })
 export class NoteListFormComponent {
-  noteListForm : FormGroup;
+  noteListForm: FormGroup;
   noteList = NoteListFactory.empty();
   isUpdatingNoteList = false;
   errors: { [key: string]: string } = {};
-  user: User | undefined ;
-
-
+  user: User | undefined;
 
   constructor(
     private fb: FormBuilder,
-    private es : EvernoteService,
+    private es: EvernoteService,
     private route: ActivatedRoute,
     private router: Router,
     private auth: AuthenticationService
   ) {
     this.noteListForm = this.fb.group({});
-
   }
+
+
   ngOnInit() {
     const noteListId = this.route.snapshot.params['noteListId'];
-    if(noteListId){
+    if (noteListId) {
       this.isUpdatingNoteList = true;
-      this.es.getNoteListById(noteListId).subscribe((list: any) =>{
+      this.es.getNoteListById(noteListId).subscribe((list: any) => {
         this.noteList = list;
-        this.auth.me().subscribe(res =>{
+        this.auth.me().subscribe(res => {
           this.user = res;
-          console.log(this.user)
+          console.log(this.user);
           this.initNoteList();
-        })
+        });
       });
-
-    }else{
-      this.auth.me().subscribe(res =>{
+    } else {
+      this.auth.me().subscribe(res => {
         this.user = res;
-        console.log(this.user)
+        console.log(this.user);
         this.initNoteList();
-      })
+      });
     }
-      this.initNoteList();
-
-
+    this.initNoteList();
   }
+
+  /**
+   * Initialisiert das Notizlisten-Formular und setzt die Form-Controls.
+   */
   initNoteList() {
     this.noteListForm = this.fb.group({
       id: [this.noteList.id, Validators.required],
-      name: [this.noteList.name, [Validators.required, Validators.minLength(5),Validators.maxLength(20)]],
+      name: [this.noteList.name, [Validators.required, Validators.minLength(5), Validators.maxLength(20)]],
       user_id: [this.noteList.user_id, Validators.required],
-      created_at: [{value: this.noteList.created_at?.toString().split("T")[0], disabled: true}],
-      updated_at: [{value: this.noteList.updated_at?.toString().split("T")[0], disabled: true}]
+      created_at: [{ value: this.noteList.created_at?.toString().split("T")[0], disabled: true }],
+      updated_at: [{ value: this.noteList.updated_at?.toString().split("T")[0], disabled: true }]
     });
     this.noteListForm.statusChanges.subscribe(() =>
       this.updateErrorMessage()
-
     );
-
   }
 
-    updateErrorMessage(): void {
+  /**
+   * Aktualisiert die Fehlermeldungen für das Formular basierend auf den aktuellen Validierungsfehlern.
+   */
+  updateErrorMessage(): void {
     this.errors = {};
     for (const message of NoteListFormErrorMessages) {
       const control = this.noteListForm.get(message.forControl);
@@ -86,15 +87,17 @@ export class NoteListFormComponent {
         control.errors[message.forValidator] &&
         !this.errors[message.forControl]) {
         this.errors[message.forControl] = message.text;
-
       }
     }
   }
 
-   submitForm() {
+  /**
+   * Übermittelt das Formular, erstellt oder aktualisiert die Notizliste und navigiert zurück zur Notizlistenübersicht.
+   */
+  submitForm() {
     const noteList = NoteListFactory.fromObject(this.noteListForm.value);
     if (this.isUpdatingNoteList) {
-      this.es.updateNoteList(noteList.id,noteList).subscribe(res => {
+      this.es.updateNoteList(noteList.id, noteList).subscribe(res => {
         this.router.navigate(["../../../noteLists"], { relativeTo: this.route });
       });
     } else {
@@ -103,12 +106,10 @@ export class NoteListFormComponent {
       }
       this.es.createNoteList(noteList).subscribe(res => {
         this.noteList = NoteListFactory.empty();
-        console.log(noteList)
+        console.log(noteList);
         this.noteListForm.reset(NoteListFactory.empty());
         this.router.navigate(["../../noteLists"], { relativeTo: this.route });
       });
     }
-
   }
-
 }

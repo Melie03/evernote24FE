@@ -5,7 +5,6 @@ import { NoteComponent } from '../note/note.component';
 import { AuthenticationService } from '../shared/authentication.service';
 import { User } from '../shared/user';
 import { Observable } from 'rxjs';
-import { literal } from '@angular/compiler';
 
 @Component({
   selector: 'bs-note-list',
@@ -27,14 +26,17 @@ export class NoteListComponent implements OnInit {
     private auth: AuthenticationService
   ) {}
 
+
   ngOnInit(): void {
     this.loadNoteLists();
     this.evernoteService.getUsers().subscribe(res => {
       this.users = res;
     });
-
   }
 
+  /**
+   * Lädt die Notizlisten des angemeldeten Benutzers.
+   */
   loadNoteLists(): void {
     this.auth.me().subscribe(res => {
       this.user = res;
@@ -68,6 +70,9 @@ export class NoteListComponent implements OnInit {
     );
   }
 
+  /**
+   * Teilt eine Notizliste mit einem ausgewählten Benutzer.
+   */
   shareList(listId: number): void {
     const selectedUserId = this.userSelectionMap.get(listId);
     if (selectedUserId) {
@@ -99,9 +104,12 @@ export class NoteListComponent implements OnInit {
     return this.evernoteService.shareNoteList(listId, userId);
   }
 
+  /**
+   * Entfernt einen Benutzer aus einer geteilten Notizliste.
+   */
   removeFromList(listId: number): void {
     const selectedUserId = this.userRemoveSelectionMap.get(listId);
-    console.log(listId)
+    console.log(listId);
     if (selectedUserId) {
       this.evernoteService.declineSharedList(listId, Number(selectedUserId)).subscribe();
     } else {

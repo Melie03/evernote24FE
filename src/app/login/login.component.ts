@@ -30,6 +30,7 @@ export class LoginComponent implements OnInit {
       password: ["", Validators.required]
     });
   }
+
   login() {
     const val = this.loginForm.value;
     if (val.username && val.password) {

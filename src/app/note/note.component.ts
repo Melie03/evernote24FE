@@ -32,18 +32,20 @@ export class NoteComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
     this.route.params.subscribe(params => {
       this.id = params['listId'];
       this.loadNote();
       this.es.getTags().subscribe(res => {
         this.tags = res;
-        console.log(this.tags)
-      })
+        console.log(this.tags);
+      });
     });
-
   }
 
+  /**
+   * Lädt die Notizen und deren zugehörige Todos und Tags basierend auf der List-ID.
+   * Verarbeitet die Antworten und aktualisiert die lokale Notiz- und Todo-Liste.
+   */
   loadNote(): void {
     this.es.getNotesByListId(this.id).subscribe(
       (response: any) => {
@@ -77,8 +79,8 @@ export class NoteComponent implements OnInit {
     );
   }
 
-
   deleteNote(noteId: number): void {
+    // Löscht eine Notiz und lädt danach die Notizliste neu
     this.es.deleteNote(noteId).subscribe(
       (response: any) => {
         this.loadNote();
@@ -89,20 +91,26 @@ export class NoteComponent implements OnInit {
       }
     );
   }
+
   editNote(noteId: number): void {
     this.router.navigate(['../../admin/' + this.id + '/note', noteId], { relativeTo: this.route });
   }
+
   addNote() {
     this.router.navigate(['../../admin/' + this.id + '/note'], { relativeTo: this.route });
   }
+
   filter() {
+    // Filtert die Notizen basierend auf dem ausgewählten Tag
     if (this.selectedTagName === '') {
       this.notes = this.allNotes;
       return;
     }
     this.notes = this.allNotes.filter(note => note.tags.some(tag => tag.name === this.selectedTagName));
   }
+
   selectedTagFilter(event: Event) {
+    // Aktualisiert den Filter-Tag basierend auf der Auswahl aus einem Dropdown-Menü
     const selectElement = event.target as HTMLSelectElement;
     if (selectElement.value == '') {
       this.selectedTagName = '';

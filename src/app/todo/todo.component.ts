@@ -4,8 +4,8 @@ import { Tag, Todo } from '../shared/todo';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NoteTagFactory } from '../shared/noteTag-factory';
-import { TodoTagFactory } from '../shared/todoTag-factory ';
 import { TodoTag } from '../shared/todo-tag';
+import { TodoTagFactory } from '../shared/todoTag-factory ';
 
 @Component({
   selector: 'bs-todo',
@@ -27,19 +27,27 @@ export class TodoComponent implements OnInit {
     private router: Router
   ) {}
 
+  /**
+   * Initialisiert die Komponente, lädt die Todos und die Tags.
+   */
   ngOnInit(): void {
     this.loadTodos();
     this.es.getTags().subscribe(res => {
       this.tags = res;
-      console.log(this.tags)
-    })
+      console.log(this.tags);
+    });
   }
 
+  /**
+   * Lädt die Todos ohne zugehörige Notiz und ihre Tags.
+   */
   loadTodos(): void {
+    this.todos = [];
+    this.allTodos = [];
     this.es.getTodosWithoutNote().subscribe(
       (response: any) => {
-        let todossRaw = response;
-        for(let todo of todossRaw){
+        let todosRaw = response;
+        for (let todo of todosRaw) {
           this.es.getTagsByTodoId(todo.id).subscribe(
             (tagResponse: any) => {
               let currentTodo = TodoTagFactory.fromObject(todo);
@@ -59,11 +67,13 @@ export class TodoComponent implements OnInit {
     );
   }
 
+  /**
+   * Löscht ein Todo und lädt die Todos neu.
+   */
   deleteTodo(todoId: number): void {
     this.es.deleteTodo(todoId).subscribe(
       (response: any) => {
         this.loadTodos();
-        console.log(response);
       },
       (error: any) => {
         console.error('Fehler beim Löschen des Todos:', error);
@@ -74,19 +84,22 @@ export class TodoComponent implements OnInit {
   editTodo(todoId: number): void {
     this.router.navigate(['../admin/todo', todoId], { relativeTo: this.route });
   }
+
   createTodo(): void {
     this.router.navigate(['../admin/todo'], { relativeTo: this.route });
   }
-  filter() {
+
+  filter(): void {
     if (this.selectedTagName === '') {
       this.todos = this.allTodos;
       return;
     }
     this.todos = this.allTodos.filter(note => note.tags.some(tag => tag.name === this.selectedTagName));
   }
-  selectedTagFilter(event: Event) {
+
+  selectedTagFilter(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
-    if (selectElement.value == '') {
+    if (selectElement.value === '') {
       this.selectedTagName = '';
       return;
     }

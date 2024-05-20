@@ -1,35 +1,44 @@
 @if(user){
 <div class="ui container">
     <div class="ui grid">
-        <div class="ui row">
+        <div class="row">
             <div class="four wide column">
                 <img class="ui medium rounded image" src="{{user.image}}" alt="User Image">
             </div>
             <div class="twelve wide column">
                 <h1 class="ui header">
                     Hello {{user.first_name}} {{user.last_name}}
-                    <button class="ui button negative right floated" (click)="logout()">Log Out</button>
+                    <button class="ui negative button right floated" (click)="logout()">Log Out</button>
                 </h1>
                 <h2 class="ui dividing header">Daten</h2>
                 <p><strong>Email:</strong> {{user.email}}</p>
                 <p><strong>Beitrittsdatum:</strong> {{user.created_at}}</p>
             </div>
-            <div>
-                @for(list of pendingLists; track list){
-                <div class="ui card">
-                    <div class="content">
-                        <div class="header">Liste</div>
-                        <div class="meta">Erstellt am: {{list.created_at}}</div>
-                        <div class="description">
-                            <p>ID: {{list.id}}</p>
-                            <p>Name: {{list.name}}</p>
-                            <p>User ID: {{list.user_id}}</p>
+        </div>
+        <div class="row">
+            <div class="sixteen wide column">
+                <h2 class="ui dividing header">Pending Lists</h2>
+                <div class="ui cards">
+                    @for(list of pendingLists; track list){
+                    <div class="ui card">
+                        <div class="content">
+                            <div class="header">Liste</div>
+                            <div class="meta">Erstellt am: {{list.created_at}}</div>
+                            <div class="description">
+                                <p><strong>ID:</strong> {{list.id}}</p>
+                                <p><strong>Name:</strong> {{list.name}}</p>
+                                <p><strong>User ID:</strong> {{list.user_id}}</p>
+                            </div>
                         </div>
-                        <button (click)="acceptList(list.id)">Akzeptieren</button>
-                        <button (click)="declineList(list.id)">Ablehnen</button>
+                        <div class="extra content">
+                            <div class="ui two buttons">
+                                <button class="ui green button" (click)="acceptList(list.id)">Akzeptieren</button>
+                                <button class="ui red button" (click)="declineList(list.id)">Ablehnen</button>
+                            </div>
+                        </div>
                     </div>
+                    }
                 </div>
-                }
             </div>
         </div>
     </div>

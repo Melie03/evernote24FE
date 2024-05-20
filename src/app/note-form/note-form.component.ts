@@ -11,7 +11,6 @@ import { TodoFactory } from '../shared/todo-factory';
 import { NoteFormErrorMessages } from './note-form-error-message';
 import { User } from '../shared/user';
 
-
 @Component({
   selector: 'bs-note-form',
   standalone: true,
@@ -19,22 +18,21 @@ import { User } from '../shared/user';
   templateUrl: './note-form.component.html',
   styles: ``
 })
-export class NoteFormComponent implements OnInit{
-  noteForm : FormGroup;
+export class NoteFormComponent implements OnInit {
+  noteForm: FormGroup;
   note = NoteFactory.empty();
   isUpdatingNote = false;
   errors: { [key: string]: string } = {};
   tags: FormArray;
   todos: FormArray;
-  noteTags: Tag [] = [];
+  noteTags: Tag[] = [];
   noteListId: number = 0;
   noteTodos: Todo[] = [];
   sharedUsers: User[] = [];
 
-
   constructor(
     private fb: FormBuilder,
-    private es : EvernoteService,
+    private es: EvernoteService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -43,18 +41,19 @@ export class NoteFormComponent implements OnInit{
     this.todos = this.fb.array([]);
   }
 
+
   ngOnInit() {
     const noteId = this.route.snapshot.params['noteId'];
     this.noteListId = this.route.snapshot.params['noteListId'];
-    if(noteId){
+    if (noteId) {
       this.isUpdatingNote = true;
-      this.es.getNoteById(noteId).subscribe((note: any) =>{
+      this.es.getNoteById(noteId).subscribe((note: any) => {
         this.note = note;
         this.es.getTagsByNoteId(noteId).subscribe((tags: any) => {
           this.noteTags = tags;
           this.note.note_list_id = this.noteListId;
           this.es.getTodosByNoteId(noteId).subscribe((todos: any) => {
-              this.noteTodos = todos;
+            this.noteTodos = todos;
             this.es.getUsersWhoShareLists(this.noteListId).subscribe((users: any) => {
               this.sharedUsers = users;
               this.initNote();
@@ -62,16 +61,19 @@ export class NoteFormComponent implements OnInit{
           });
         });
       });
-    }else{
+    } else {
       this.es.getUsersWhoShareLists(this.noteListId).subscribe((users: any) => {
         this.sharedUsers = users;
         this.initNote();
       });
     }
     this.note.note_list_id = this.noteListId;
-      this.initNote();
+    this.initNote();
   }
 
+  /**
+   * Initialisiert das Notizformular und die FormArrays für Tags und Todos.
+   */
   initNote() {
     this.buildTagsArray();
     this.buildTodoArray();
@@ -80,20 +82,22 @@ export class NoteFormComponent implements OnInit{
       title: [this.note.title, [Validators.required, Validators.minLength(5), Validators.maxLength(50)]],
       description: [this.note.description, [Validators.required, Validators.minLength(5), Validators.maxLength(400)]],
       img: [this.note.img],
-      note_list_id: [{value: this.note.note_list_id, disabled: true}],
-      created_at: [{value: this.note.created_at.toString().split("T")[0], disabled: true}],
-      updated_at: [{value: this.note.updated_at.toString().split("T")[0], disabled: true}],
+      note_list_id: [{ value: this.note.note_list_id, disabled: true }],
+      created_at: [{ value: this.note.created_at.toString().split("T")[0], disabled: true }],
+      updated_at: [{ value: this.note.updated_at.toString().split("T")[0], disabled: true }],
       tags: this.tags,
       todos: this.todos
     });
 
-
     this.noteForm.statusChanges.subscribe(() =>
       this.updateErrorMessage()
     );
-
   }
-    updateErrorMessage(): void {
+
+  /**
+   * Aktualisiert die Fehlermeldungen für das Formular basierend auf den aktuellen Validierungsfehlern.
+   */
+  updateErrorMessage(): void {
     this.errors = {};
     console.log(this.noteForm)
     for (const message of NoteFormErrorMessages) {
@@ -109,66 +113,76 @@ export class NoteFormComponent implements OnInit{
     }
   }
 
+  /**
+   * Baut das FormArray für Tags basierend auf den vorhandenen Notiz-Tags.
+   */
   buildTagsArray(): any {
     if (this.noteTags) {
       this.tags = this.fb.array([]);
 
       for (let tag of this.noteTags) {
         let fg = this.fb.group({
-         tagName : new FormControl(tag.name)
+          tagName: new FormControl(tag.name)
         });
         this.tags.push(fg);
       }
     }
   }
+
+  /**
+   * Baut das FormArray für Todos basierend auf den vorhandenen Notiz-Todos.
+   */
   buildTodoArray(): any {
     if (this.todos) {
       this.todos = this.fb.array([]);
 
-      for (let todo of  this.noteTodos) {
+      for (let todo of this.noteTodos) {
         let fg = this.fb.group({
-          id : new FormControl(todo.id ,[ Validators.required]),
-         title : new FormControl(todo.title,[ Validators.required, Validators.maxLength(30)]),
-          description : new FormControl(todo.description,[Validators.required, Validators.maxLength(255), Validators.minLength(5)]),
-          due_date : new FormControl(todo.due_date, [Validators.required]),
+          id: new FormControl(todo.id, [Validators.required]),
+          title: new FormControl(todo.title, [Validators.required, Validators.maxLength(30)]),
+          description: new FormControl(todo.description, [Validators.required, Validators.maxLength(255), Validators.minLength(5)]),
+          due_date: new FormControl(todo.due_date, [Validators.required]),
           note_id: new FormControl(this.note.id, [Validators.required]),
-          assigned_user_id : new FormControl(todo.assigned_user_id),
-          created_at: [{value: todo.created_at.toString().split("T")[0], disabled: true}],
-          updated_at: [{value: todo.updated_at.toString().split("T")[0], disabled: true}],
-          completed : new FormControl(todo.completed)
+          assigned_user_id: new FormControl(todo.assigned_user_id),
+          created_at: [{ value: todo.created_at.toString().split("T")[0], disabled: true }],
+          updated_at: [{ value: todo.updated_at.toString().split("T")[0], disabled: true }],
+          completed: new FormControl(todo.completed)
         });
         this.todos.push(fg);
       }
-
     }
   }
+
+  /**
+   * Übermittelt das Formular, erstellt oder aktualisiert die Notiz und die zugehörigen Todos und navigiert zur Notizliste.
+   */
   submitForm() {
     console.log(this.noteForm.value);
     const note = NoteFactory.fromObject(this.noteForm.value);
     let tags = [];
-    let todos : Todo [] = [];
-    for(let tag of this.noteForm.value.tags){
-      tags.push({name : tag.tagName});
+    let todos: Todo[] = [];
+    for (let tag of this.noteForm.value.tags) {
+      tags.push({ name: tag.tagName });
     }
-    for(let t of this.noteForm.value.todos){
+    for (let t of this.noteForm.value.todos) {
       let todo = TodoFactory.fromObject(t);
       todo.note_id = note.id;
-      if(todo.assigned_user_id == -1){
+      if (todo.assigned_user_id == -1) {
         todo.assigned_user_id = null;
       }
       todos.push(todo);
       console.log(todo);
     }
-    let noteTags : NoteTag = NoteTagFactory.fromObject(note);
+    let noteTags: NoteTag = NoteTagFactory.fromObject(note);
     noteTags.tags = tags;
     noteTags.note_list_id = this.noteListId;
-    if(noteTags.img && noteTags.img == ''){
+    if (noteTags.img && noteTags.img == '') {
       noteTags.img = null;
     }
     if (this.isUpdatingNote) {
       this.es.updateNote(note.id, noteTags).subscribe(res => {
-        for(let t of todos){
-          if(t.id == -1){
+        for (let t of todos) {
+          if (t.id == -1) {
             this.es.createTodo(t).subscribe(res => {
               console.log(res);
             });
@@ -178,14 +192,14 @@ export class NoteFormComponent implements OnInit{
             });
           }
         }
-        for(let n of this.noteTodos){
+        for (let n of this.noteTodos) {
           let found = false;
-          for(let t of todos){
-            if(n.id == t.id){
+          for (let t of todos) {
+            if (n.id == t.id) {
               found = true;
             }
           }
-          if(!found){
+          if (!found) {
             this.es.deleteTodo(n.id).subscribe(res => {
               console.log(res);
             });
@@ -198,7 +212,7 @@ export class NoteFormComponent implements OnInit{
     } else {
       console.log(note);
       this.es.createNote(noteTags).subscribe(res => {
-        for(let todo of todos){
+        for (let todo of todos) {
           todo.note_id = res.id;
           this.es.createTodo(todo).subscribe(res => {
             console.log(res);
@@ -210,14 +224,13 @@ export class NoteFormComponent implements OnInit{
 
       })
     }
-
   }
+
   addTagControl() {
-    this.tags.push(this.fb.group({tagName: ''}));
+    this.tags.push(this.fb.group({ tagName: '' }));
   }
 
-
-  deleteTag(tag: any){
+  deleteTag(tag: any) {
     this.tags.removeAt(this.tags.controls.indexOf(tag));
   }
 
@@ -228,8 +241,8 @@ export class NoteFormComponent implements OnInit{
       description: '',
       due_date: '',
       assigned_user_id: '',
-      created_at: [{value: (new Date ()).toISOString().split("T")[0], disabled: true}],
-          updated_at: [{value: (new Date ()).toISOString().split("T")[0], disabled: true}],
+      created_at: [{ value: (new Date()).toISOString().split("T")[0], disabled: true }],
+      updated_at: [{ value: (new Date()).toISOString().split("T")[0], disabled: true }],
       completed: false
     }));
   }
@@ -240,5 +253,4 @@ export class NoteFormComponent implements OnInit{
       this.todos.removeAt(index);
     }
   }
-
 }

@@ -1,4 +1,4 @@
-// user.component.ts
+
 import { Component, OnInit } from '@angular/core';
 import { NoteLists, User } from '../shared/user';
 import { EvernoteService } from '../shared/evernote.service'; // Import your service

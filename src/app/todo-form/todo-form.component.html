@@ -1,48 +1,68 @@
-<h1>Todo</h1>
-<form class="ui large form" [formGroup]="todoForm" (ngSubmit)="submitForm()">
-    <div class="field">
-        <label for="title">Titel</label>
-        <input type="text" id="title" formControlName="title"> @if(errors['title']){
-        <div class="ui negative message">{{ errors['title'] }}</div>
-        }
-    </div>
-
-    <div class="field">
-        <label for="description">Beschreibung</label>
-        <textarea id="description" formControlName="description"></textarea> @if(errors['description']){
-        <div class="ui negative message">{{ errors['description'] }}</div>
-        }
-    </div>
-
-    <div class="field">
-        <label for="due_date">Fälligkeitsdatum</label>
-        <input type="date" id="due_date" formControlName="due_date" [disabled]="false"> @if(errors['due_date']){
-        <div class="ui negative message">{{ errors['due_date'] }}</div>
-        }
-    </div>
-    <div class="field">
-        <label>Erstellungsdatum</label>
-        <input type="date" formControlName="created_at" [disabled]="true">
-    </div>
-
-    <div class="field">
-        <label>Aktualisierungsdatum</label>
-        <input type="date" formControlName="updated_at" [disabled]="true">
-    </div>
-    <div class="field">
-        <label>Abgeschlossen</label>
-        <input type="checkbox" formControlName="completed" [disabled]="false">
-    </div>
-
-    <div class="field" formArrayName="tags">
-        <label>Tags</label> @for(tag of tags.controls; let i = $index; track tag){
-        <div [formGroupName]="i">
-            <input type="text" formControlName="tagName" placeholder="Tag Name">
-            <button class="ui red button" type="button" (click)="deleteTag(tag)">Entfernen</button>
+<div class="ui container">
+    <h1 class="ui header">Todo</h1>
+    <form class="ui large form" [formGroup]="todoForm" (ngSubmit)="submitForm()">
+        <div class="field">
+            <label for="title">Titel</label>
+            <input type="text" id="title" formControlName="title"> @if(errors['title']){
+            <div class="ui negative message">
+                {{ errors['title'] }}
+            </div>
+            }
         </div>
-        }
-        <button class="ui green button" type="button" (click)="addTagControl()">Tag hinzufügen</button>
-    </div>
 
-    <button type="submit" class="ui button" [disabled]="todoForm.invalid">Speichern</button>
-</form>
+        <div class="field">
+            <label for="description">Beschreibung</label>
+            <textarea id="description" formControlName="description"></textarea> @if(errors['description']){
+            <div class="ui negative message">
+                {{ errors['description'] }}
+            </div>
+            }
+        </div>
+
+        <div class="field">
+            <label for="due_date">Fälligkeitsdatum</label>
+            <input type="date" id="due_date" formControlName="due_date"> @if(errors['due_date']){
+            <div class="ui negative message">
+                {{ errors['due_date'] }}
+            </div>
+            }
+        </div>
+
+        <div class="two fields">
+            <div class="field">
+                <label>Erstellungsdatum</label>
+                <input type="date" formControlName="created_at" [disabled]="true">
+            </div>
+
+            <div class="field">
+                <label>Aktualisierungsdatum</label>
+                <input type="date" formControlName="updated_at" [disabled]="true">
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Abgeschlossen</label>
+            <div class="ui checkbox">
+                <input type="checkbox" formControlName="completed">
+                <label></label>
+            </div>
+        </div>
+
+        <div class="field" formArrayName="tags">
+            <label>Tags</label>
+            <div class="ui segments">
+                @for(tag of tags.controls; let i = $index; track tag){
+                <div class="ui segment" [formGroupName]="i">
+                    <div class="ui action input">
+                        <input type="text" formControlName="tagName" placeholder="Tag Name">
+                        <button class="ui red button" type="button" (click)="deleteTag(tag)">Entfernen</button>
+                    </div>
+                </div>
+                }
+            </div>
+            <button class="ui green button" type="button" (click)="addTagControl()">Tag hinzufügen</button>
+        </div>
+
+        <button type="submit" class="ui blue button" [disabled]="todoForm.invalid">Speichern</button>
+    </form>
+</div>
